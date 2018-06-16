@@ -1,7 +1,7 @@
 # Windows - Thumbnail cache files
 Thumbs.db
 ehthumbs.db
-ehthumbs_vista.db
+  ehthumbs_vista.db
 
 # Windows - Dump file
   *.stackdump
