@@ -11,7 +11,7 @@
 
 
 # Node.js - Packages
-  node_modules/
+  node_modules
   yarn.lock
 
 # Node.js - Log files
