@@ -1,28 +1,28 @@
 # Windows - Thumbnail cache files
 Thumbs.db
 ehthumbs.db
-  ehthumbs_vista.db
+ehthumbs_vista.db
 
 # Windows - Dump file
-  *.stackdump
+*.stackdump
 
 # Windows - Folder config file
-  [Dd]esktop.ini
+[Dd]esktop.ini
 
 
 # Node.js - Packages
-  node_modules/
-  yarn.lock
+node_modules/
+yarn.lock
 
 # Node.js - Log files
-  logs/
-  *.log
+logs/
+*.log
 
 # Node.js - NPN
-  npm-debug.log
-  package-lock.json
+npm-debug.log
+package-lock.json
 
 
 # Git
-  .git/
-  .github/
+.git/
+.github/
