@@ -4,49 +4,38 @@
 'use strict';
 
 const style = require('bart96-style');
+const regEx = require('./regEx.js')(style);
 
 
-const regCheck = new RegExp(`(?:(?<!\\\\){((?:(?:${style.colors.join('|')})\\.?)+)(?<!\\.)\\s((?:(?:[^{](?!{|})|\\\\{|\\\\})+.)?))|((?<!\\\\)})|(.)$`, 'g');
-const regLastCheck = new RegExp(`^(?:\x1b|\u001b|\u001B)\\[(${style.codes.join('|')})m`);
+function styleCli(strings, ...values) {
+  // >>> Сборка строки, полученной через styleCli(...) или styleCli`...` <<<
+  let str = typeof strings == 'string' ? strings
+    : (strings.raw ? strings.raw : strings).reduce((output, item, index) => output += item + (values[index] || ''), '');
 
 
-const styleCli = (strings, ...values) => {
-  // if (!strings) return '';
+  // >>> Проверка на наличие фигурных скобок без экранизаци <<<
+  let countOpen = str.match(regEx.countOpen).length;
+  let countClose = str.match(regEx.countClose).length;
 
-  let str = '';
+  if (countOpen != countClose) throw new Error(`
+    Ошибка в \x1b[1mрасстановке\x1b[21m фигурных скобок:
+    { (${countOpen}) ${countOpen > countClose ? '>' : '<'} (${countClose}) }.
+    Используйте \\{ и \\} для экранизации лишних скобок.
+  `);
 
-  switch (typeof strings) {
-    case 'string': str = strings; break;
-    case 'object_':
-      for(let i = 0; i < strings.length; i++) {
-        // str += (strings.raw ? strings.raw[i] : strings[i]) + (values[i] || '');
-        str += strings[i] + (values[i] || '');
-      }
-    break;
 
-    default:
-      console.log(`В CommandLineInterface (CLI) передан тип "${typeof strings}", который не поддерживается.`);
-      return strings;
+  // >>> Обертка при использовании цветных функций <<<
+  for(let key in style) {
+    Object.defineProperty(styleCli, key, {
+      value: str => `\x1b[${style[key][0]}m${str}\x1b[${style[key][1]}m`
+    });
   }
 
 
-  /**
-   *  @description Проверка на наличие фигурных скобок без экранизаци
-  **/
-
-  let countStart = str.match(/(?<!\\){(?!\s)/g).length;
-  let CountEnd = str.match(/(?<![\s\\])}/g).length;
-
-  if (countStart != CountEnd) throw new Error(`Ошибка в \x1b[1mрасстановке\x1b[21m фигурных скобок: { (${countStart}) ${countStart > CountEnd ? '>' : '<'} (${CountEnd}) }. Используйте \\{ и \\} для экранизации лишних скобок.`);
-
-
-  /**
-   *  @description Обертка при использовании главной функции или шаблонных строк
-  **/
-
+  // >>> Обертка при использовании главной функции или шаблонных строк <<<
   let collector = [];
 
-  str = str.replace(regCheck, (match, color, text, finish, end) => {
+  str = str.replace(regEx.main, (match, color, text, finish, end) => {
     let open = '';
     let close = '';
 
@@ -94,21 +83,8 @@ const styleCli = (strings, ...values) => {
 }
 
 
-/**
- *  @description Обертка при использовании цветных функций
-**/
 
-for(let key in style) {
-  Object.defineProperty(styleCli, key, {
-    value: str => `\x1b[${style[key][0]}m${str}\x1b[${style[key][1]}m`
-  });
-}
-
-
-/**
- *  @description Проверка получившейся строки
-**/
-
+// >>> Проверка получившейся строки <<<
 const lastCheck = str => {
   let newstr = '';
   let colors = [];
@@ -116,7 +92,7 @@ const lastCheck = str => {
   function checkChar(i=0, add=false) {
     if (i >= str.length) return;
 
-    let cMatch = str.slice(i).match(regLastCheck);
+    let cMatch = str.slice(i).match(regEx.check);
     if (cMatch) {
       i += cMatch[0].length;
       newstr += cMatch[0];
