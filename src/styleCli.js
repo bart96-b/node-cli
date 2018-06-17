@@ -17,11 +17,7 @@ function styleCli(strings, ...values) {
   let countOpen = str.match(regEx.countOpen).length;
   let countClose = str.match(regEx.countClose).length;
 
-  if (countOpen != countClose) throw new Error(`
-    Ошибка в \x1b[1mрасстановке\x1b[21m фигурных скобок:
-    { (${countOpen}) ${countOpen > countClose ? '>' : '<'} (${countClose}) }.
-    Используйте \\{ и \\} для экранизации лишних скобок.
-  `);
+  if (countOpen != countClose) throw new Error(`Ошибка в \x1b[1mрасстановке\x1b[21m фигурных скобок: { (${countOpen}) ${countOpen > countClose ? '>' : '<'} (${countClose}) }. Используйте \\{ и \\} для экранизации лишних скобок.`);
 
 
   // >>> Обертка при использовании цветных функций <<<
