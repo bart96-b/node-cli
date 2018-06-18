@@ -1,6 +1,6 @@
 {
   "name": "bart96-style-cli",
-  "version": "0.0.2-alpha",
+  "version": "0.0.3-alpha",
   "description": "A node.js package for displaying formatted text in the console.",
   "main": "src/styleCli",
   "scripts": {

@@ -120,6 +120,6 @@ const lastCheck = str => {
   return newstr + '\x1b[0m';
 };
 
-// console.log(styleCli.red);
+
 
 module.exports = styleCli;
