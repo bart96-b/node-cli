@@ -10,7 +10,7 @@ const regEx = require('./regEx.js')(style);
 function styleCli(strings, ...values) {
   // >>> Сборка строки, полученной через styleCli(...) или styleCli`...` <<<
   let str = typeof strings == 'string' ? strings
-    : (strings.raw ? strings.raw : strings).reduce((output, item, index) => output += item + (values[index] || ''), '');
+    : strings.reduce((output, item, index) => output += item + (values[index] || ''), '');
 
 
   // >>> Проверка на наличие фигурных скобок без экранизаци <<<
@@ -18,14 +18,6 @@ function styleCli(strings, ...values) {
   let countClose = str.match(regEx.countClose).length;
 
   if (countOpen != countClose) throw new Error(`Ошибка в \x1b[1mрасстановке\x1b[21m фигурных скобок: { (${countOpen}) ${countOpen > countClose ? '>' : '<'} (${countClose}) }. Используйте \\{ и \\} для экранизации лишних скобок.`);
-
-
-  // >>> Обертка при использовании цветных функций <<<
-  for(let key in style) {
-    Object.defineProperty(styleCli, key, {
-      value: str => `\x1b[${style[key][0]}m${str}\x1b[${style[key][1]}m`
-    });
-  }
 
 
   // >>> Обертка при использовании главной функции или шаблонных строк <<<
@@ -79,6 +71,13 @@ function styleCli(strings, ...values) {
 }
 
 
+// >>> Обертка при использовании цветных функций <<<
+for(let key in style) {
+  Object.defineProperty(styleCli, key, {
+    value: str => `\x1b[${style[key][0]}m${str}\x1b[${style[key][1]}m`
+  });
+}
+
 
 // >>> Проверка получившейся строки <<<
 const lastCheck = str => {
@@ -121,6 +120,6 @@ const lastCheck = str => {
   return newstr + '\x1b[0m';
 };
 
-
+// console.log(styleCli.red);
 
 module.exports = styleCli;
